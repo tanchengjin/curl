@@ -1,0 +1,20 @@
+{
+    "name": "tan/curl",
+    "description": "php curl operation",
+    "type": "library",
+    "require": {
+        "php": ">=5.6"
+    },
+	"autoload":{
+		"psr-4":{
+			"tan\\curl\\":"src"
+		}
+	},
+    "authors": [
+        {
+            "name": "tanchengjin",
+            "email": "18865477815@163.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
