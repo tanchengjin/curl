@@ -2,6 +2,7 @@
 namespace tan\curl;
 
 class Curl{
+    public $msg;
 	public static function request($url,$https=false,$post=false,$data=null){
 	    //curl resource
         $ch=curl_init($url);
@@ -19,6 +20,10 @@ class Curl{
             }
         }
         $result=curl_exec($ch);
+        //record error
+        if(!$result){
+            $msg=curl_error($ch);
+        }
 		curl_close($ch);
 		return $result;
 	}
