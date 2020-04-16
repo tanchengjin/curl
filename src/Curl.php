@@ -1,30 +1,136 @@
 <?php
+
 namespace tan\curl;
 
-class Curl{
-    public $msg;
-	public static function request($url,$https=false,$post=false,$data=null){
-	    //curl resource
-        $ch=curl_init($url);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+class Curl
+{
+    private $ch;
+
+    private $source;
+    private $message;
+    private $error_code;
+
+    private $url=null;
+    private $https=false;
+    private $post=false;
+    private $data=[];
+
+    public function __construct($url=null, $https = false, $post = false, $data = [])
+    {
+        $this->url=$url;
+        $this->https=$https;
+        $this->post=$post;
+        $this->data=$data;
+        $this->init();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSource()
+    {
+        return $this->source;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getErrorCode()
+    {
+        return $this->error_code;
+    }
+
+    protected function request($url, $https = false, $post = false, array $data = [])
+    {
+        $this->setUrl($url[0]);
+        $this->https=$https;
+        $this->post=$post;
+        $this->data=$data;
+        return $this->handler();
+    }
+    public function setUrl($url){
+        $this->url=$url;
+        return $this;
+    }
+    private function init(){
+        if (is_null($this->ch) && !is_null($this->url)){
+            $this->ch = curl_init($this->url);
+        }
+    }
+    private function handler()
+    {
+        //curl resource
+        $this->init();
+        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         //don't ssl
-		if($https === true){
-            curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
-            curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,false);
+        if ($this->https === true) {
+            $this->setHttps();
         }
-        if($post === true){
-            curl_setopt($ch,CURLOPT_POST,true);
-			
-            if(!empty($data)){
-                curl_setopt($ch,CURLOPT_POSTFIELDS,$data);
-            }
+        if ($this->post === true) {
+            $this->setPost();
         }
-        $result=curl_exec($ch);
-        //record error
-        if(!$result){
-            $msg=curl_error($ch);
+        $this->source = curl_exec($this->ch);
+        $this->error_code = curl_errno($this->ch);
+        $this->message = curl_error($this->ch);
+
+        curl_close($this->ch);
+        return $this->getResult();
+    }
+
+    public function setHttps($peer = false, $host = false)
+    {
+        #verify local
+        curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, $peer);
+        #verify server
+        curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, $host);
+        return $this;
+    }
+
+    public function setPost()
+    {
+        curl_setopt($this->ch, CURLOPT_POST, true);
+
+        if (!empty($this->data)) {
+            curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->data);
         }
-		curl_close($ch);
-		return $result;
-	}
+        return $this;
+    }
+
+    public function post($url=null,array $data=[])
+    {
+        $this->setUrl($url);
+        if(!empty($data)){
+            $this->data=$data;
+        }
+        $this->post=true;
+        $this->handler();
+        return $this->getResult();
+    }
+    public function get($url=null){
+        $this->setUrl($url);
+        $this->handler();
+        return $this->getResult();
+    }
+    private function getResult()
+    {
+        return [
+            'source' => $this->source,
+            'error_code' => $this->error_code,
+            'message' => $this->message,
+        ];
+    }
+
+
+    public static function __callStatic($func, $args)
+    {
+        return (new static)->$func($args);
+    }
 }
