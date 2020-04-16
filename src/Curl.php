@@ -1,6 +1,6 @@
 <?php
 
-namespace tan\curl;
+namespace TanChengjin\Curl;
 
 class Curl
 {
@@ -104,7 +104,7 @@ class Curl
         return $this;
     }
 
-    public function post($url=null,array $data=[])
+    public function post($url=null,$https=false,array $data=[])
     {
         $this->setUrl($url);
         if(!empty($data)){
@@ -114,8 +114,9 @@ class Curl
         $this->handler();
         return $this->getResult();
     }
-    public function get($url=null){
+    public function get($url=null,$https=false){
         $this->setUrl($url);
+        $this->https=$https;
         $this->handler();
         return $this->getResult();
     }
