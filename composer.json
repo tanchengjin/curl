@@ -17,5 +17,6 @@
             "email": "18865477815@163.com"
         }
     ],
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "license": "MIT"
 }
