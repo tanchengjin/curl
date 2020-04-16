@@ -1,5 +1,5 @@
 {
-    "name": "tan/curl",
+    "name": "tanchengjin/curl",
     "description": "php curl operation",
     "type": "library",
     "require": {
@@ -13,7 +13,7 @@
 	},
     "authors": [
         {
-            "name": "tanchengjin",
+            "name": "TanChengjin",
             "email": "18865477815@163.com"
         }
     ],
